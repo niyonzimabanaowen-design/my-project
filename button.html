@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KDA Student Achievement Showcase</title>
+    <meta name="description" content="KDA Student Achievement Showcase - celebrating student success in academics, sports, and beyond.">
+    <meta property="og:title" content="KDA Student Achievement Showcase">
+    <meta property="og:description" content="Celebrating student excellence and success at KDA.">
+    <meta property="og:image" content="image/kda-banner.jpg">
+    <link rel="icon" href="image/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary: #22577a; /* Deep Blue/Teal */
+            --secondary: #38a3a5; /* Teal */
+            --highlight: #ffd166; /* Yellow/Gold */
+            --bg-light: #f8f9fa;
+            --bg-dark: #0d1117;
+            --card-light: #ffffff;
+            --card-dark: #1e293b;
+            --text-light: #222;
+            --text-dark: #f0f6fc;
+        }
+
+        /* Base Styles */
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            color: var(--text-light);
+            background: var(--bg-light);
+            min-height: 100vh;
+            transition: background 0.4s, color 0.4s;
+            overflow-x: hidden;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 1rem;
+        }
+
+        /* ===== LOADER ===== */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: #fff;
+            font-size: 2rem;
+            font-weight: bold;
+            flex-direction: column;
+            gap: 1rem;
+            animation: fadeOut 0.8s ease-in-out forwards;
+            animation-delay: 2.2s;
+            pointer-events: none;
+        }
+        #loader.hidden { opacity: 0; visibility: hidden; }
+        .loader-logo {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top: 6px solid var(--highlight);
+            border-radius: 50%;
+            animation: spin 1.3s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        /* ===== BODY BACKGROUND IMAGE (Improved) ===== */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            /* Ensure you have a 'kda.jpg' image in the same directory or update the path */
+            background: url("kda.jpg") center/cover no-repeat fixed; 
+            filter: blur(6px);
+            opacity: 0.5;
+            transition: opacity 0.4s;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #fff, var(--highlight), #fff);
+            background-size: 200%;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200%; } }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0; /* Changed from -20px to 0 for a cleaner line */
+            left: 50%;
+            width: 100%; /* Changed from 80% to 100% */
+            height: 4px;
+            background: var(--highlight);
+            transform: translateX(-50%);
+            border-radius: 0; /* Removed border-radius */
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            animation: fadeInUp 1.2s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            background: var(--secondary);
+            text-align: center;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: #fff;
+            margin: 0 0.6rem;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 0.4rem 0;
+            transition: color 0.2s, border-bottom 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--highlight);
+            border-bottom: 2px solid var(--highlight);
+        }
+
+        .dark-toggle {
+            background: var(--highlight);
+            color: var(--primary);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.3s;
+            margin-left: 1rem;
+        }
+        .dark-toggle:hover {
+            transform: scale(1.05);
+            background: #ffe57f;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            background: linear-gradient(to right, rgba(34,87,122,0.95), rgba(56,163,165,0.9));
+            color: #fff;
+            text-align: center;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            margin: 2rem auto;
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* ===== ACHIEVEMENTS SECTION (Refined) ===== */
+        .achievements-section {
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-light);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(56,163,165,0.1);
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+
+        .achievements-section h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .achievements-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .achievement-card {
+            background: var(--card-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            width: 280px; /* Slightly wider cards */
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.4s, color 0.4s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Removed inline animation delay and added AOS data-attribute in HTML for better control */
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(56,163,165,0.25);
+        }
+
+        .achievement-photo {
+            height: 200px; /* Slightly taller photos */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .achievement-photo::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(34,87,122,0.4), transparent);
+            transition: background 0.4s;
+        }
+
+        .achievement-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .achievement-photo img:hover { transform: scale(1.08); }
+
+        .achievement-info {
+            padding: 1rem 1.2rem;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .achievement-info .student {
+            font-weight: bold;
+            font-size: 1.2rem; /* Slightly larger text */
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .achievement-info .category {
+            background: var(--secondary);
+            color: #fff;
+            padding: 0.25rem 0.8rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 0.8rem; /* More spacing */
+        }
+
+        .achievement-info .desc {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        /* ===== CONTACT FORM ===== */
+        form {
+            background: var(--card-light);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 600px; /* Constrain width for better look */
+            margin: 2rem auto;
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+
+        form label {
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        form input, form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Fix for padding issue */
+            transition: background 0.4s, color 0.4s, border 0.4s;
+        }
+
+        form button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        form button:hover {
+            background: var(--secondary);
+            transform: scale(1.03);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            margin-top: 3rem;
+            letter-spacing: 1px;
+            transition: background 0.4s;
+        }
+
+        footer i {
+            margin: 0 0.5rem;
+            color: var(--highlight);
+            transition: color 0.3s;
+        }
+        footer i:hover { color: #fff; }
+
+        /* ===== BACK TO TOP BUTTON ===== */
+        #backToTop {
+            position:fixed;
+            bottom:25px;
+            right:25px;
+            background:var(--secondary);
+            border:none;
+            color:white;
+            padding:10px 14px;
+            border-radius:50%;
+            cursor:pointer;
+            box-shadow:0 4px 10px rgba(0,0,0,0.3);
+            display:none;
+            z-index: 900;
+            transition: background 0.3s;
+        }
+        #backToTop:hover { background: var(--primary); }
+
+        /* ===== DARK MODE STYLES ===== */
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode body::before { opacity: 0.3; }
+
+        body.dark-mode .hero {
+            background: linear-gradient(to right, rgba(30,58,138,0.9), rgba(56,163,165,0.8));
+        }
+
+        body.dark-mode .achievements-section,
+        body.dark-mode form {
+            background: rgba(30, 41, 59, 0.9);
+            color: #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .achievement-card {
+            background: var(--card-dark);
+            color: #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .achievement-card:hover {
+            box-shadow: 0 8px 20px rgba(56,163,165,0.4);
+        }
+
+        body.dark-mode .achievement-info .desc { color: #cbd5e1; }
+        body.dark-mode .achievement-info .student { color: var(--highlight); }
+
+        body.dark-mode .achievement-info .category {
+            background: #38bdf8;
+            color: #0f172a;
+        }
+
+        body.dark-mode form input, body.dark-mode form textarea {
+            background: #2d3748;
+            border-color: #4a5568;
+            color: var(--text-dark);
+        }
+        
+        body.dark-mode footer { background: #1e293b; }
+
+        /* ===== RESPONSIVENESS ===== */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.2rem; }
+            .hero { padding: 2rem; }
+            .achievements-section { padding: 1rem; }
+            .achievements-list { flex-direction: column; align-items: center; }
+            .achievement-card { width: 90%; max-width: 350px; }
+            nav { justify-content: space-around; }
+            .dark-toggle { margin-left: 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div class="loader-logo"></div>
+        <div>KDA Showcase</div>
+    </div>
+
+    <header id="home" data-aos="fade-down">
+        <h1>KDA Student Achievement Showcase</h1>
+        <p>Celebrating Excellence, Inspiring the Future</p>
+    </header>
+
+    <nav>
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#sports" class="nav-link">Sports</a>
+        <a href="#academic" class="nav-link">Academics</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube"></i> YouTube</a>
+        <button class="dark-toggle" id="darkModeToggle" onclick="toggleDarkMode()">🌙 Dark</button>
+    </nav>
+
+    <main>
+        <section class="hero" data-aos="zoom-in">
+            <h2>Welcome to Our Celebration Platform 🎉</h2>
+            <p>At KDA, we believe in recognizing and celebrating every student’s success — whether it's in academics, sports, arts, or leadership. Explore inspiring stories and celebrate together!</p>
+        </section>
+
+        <section class="achievements-section" id="sports">
+            <h2>🥇 Sports Achievements</h2>
+            <div class="achievements-list">
+                <div class="achievement-card" data-aos="fade-up">
+                    <div class="achievement-photo">
+                        <img src="image/owen.webp" alt="Owen playing football">
+                    </div>
+                    <div class="achievement-info">
+                        <span class="student">Bana Owen</span>
+                        <span class="category">Football</span>
+                        <p class="desc">Owen was the best player in the school football team this year, showing amazing leadership and teamwork.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="achievement-photo">
+                        <img src="images/davis.png" alt="Davis swimming in competition">
+                    </div>
+                    <div class="achievement-info">
+                        <span class="student">Davis</span>
+                        <span class="category">Swimming</span>
+                        <p class="desc">
+                            Davis is an exceptional swimmer known for his speed, endurance, and perfect technique.
+                            He has won multiple gold medals in national championships, inspiring younger athletes to excel.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="achievement-photo">
+                        <img src="image/IMG-20250818-WA0008.jpg" alt="Nick playing basketball">
+                    </div>
+                    <div class="achievement-info">
+                        <span class="student">Nick</span>
+                        <span class="category">Basketball</span>
+                        <p class="desc">Nick was the MVP in basketball for his outstanding performance and inspiring commitment to the team.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="achievement-photo">
+                        <img src="image/mirreal12.jpg" alt="Mir Junior playing volleyball">
+                    </div>
+                    <div class="achievement-info">
+                        <span class="student">Mir Junior</span>
+                        <span class="category">Volleyball</span>
+                        <p class="desc">Mir Junior was awarded the Most Valuable Player in volleyball, showing great spirit and sportsmanship.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="achievements-section" id="academic">
+            <h2>🎓 Academic Achievements</h2>
+            <div class="achievements-list">
+                <div class="achievement-card" data-aos="fade-up">
+                    <div class="achievement-photo">
+                        <img src="image/kda btec.jpg" alt="BTEC science, IT and business students group">
+                    </div>
+                    <div class="achievement-info">
+                        <span class="student">G12 BTEC Students</span>
+                        <span class="category">BTEC</span>
+                        <p class="desc">Students achieved high marks across all units in Science, IT, and Business, showing strong academic excellence and teamwork.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="achievement-photo">
+                        <img src="image/mark ethan.jpg" alt="Mark Ethan academic excellence">
+                    </div>
+                    <div class="achievement-info">
+                        <span class="student">Mark Ethan</span>
+                        <span class="category">Cambridge</span>
+                        <p class="desc">Achieved **3A\*** in Math, Physics, and Geography — a great example of dedication and hard work.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" data-aos="fade-up">
+            <form action="#" method="POST">
+                <h2>Contact Us 📧</h2>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Your email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" placeholder="Write your message..." required></textarea>
+                
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 KDA Student Achievement Showcase. All rights reserved.</p>
+        <div>
+            <a href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <button id="backToTop" title="Go to top">⬆</button>
+
+    <script>
+        // 1. LOADER SCRIPT
+        const loader = document.getElementById('loader');
+        window.addEventListener('load', () => {
+            // Hides the loader after a short delay to allow content to load
+            setTimeout(() => loader.classList.add('hidden'), 1800);
+        });
+
+        // 2. DARK MODE TOGGLE
+        const body = document.body;
+        const toggleButton = document.getElementById('darkModeToggle');
+
+        function toggleDarkMode() {
+            body.classList.toggle('dark-mode');
+            
+            // Update button text and icon
+            if (body.classList.contains('dark-mode')) {
+                toggleButton.innerHTML = '☀️ Light';
+            } else {
+                toggleButton.innerHTML = '🌙 Dark';
+            }
+        }
+
+        // 3. BACK TO TOP BUTTON LOGIC
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            // Show/hide the button after scrolling 300px
+            backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+        });
+
+        // 4. ACTIVE NAVIGATION LINK HIGHLIGHTING
+        const sections = document.querySelectorAll('main section, header');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            // Determine the current section in view
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                // Offset by nav height (approx 70px)
+                if (window.scrollY >= sectionTop - 70) { 
+                    current = section.getAttribute('id');
+                }
+            });
+
+            // Update the active class on navigation links
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+    </script>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({ duration: 900, once: true });</script>
+</body>
+</html>
